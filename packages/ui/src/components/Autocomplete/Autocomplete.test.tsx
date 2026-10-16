@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useState } from "react";
 import { Autocomplete } from "./index";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -131,19 +132,68 @@ describe("Autocomplete", () => {
 
   test("should delete value when chip delete button is clicked", async () => {
     const onChange = jest.fn();
+    const value = [mockValues[0], mockValues[1]];
     const { queryAllByTestId } = render(
       <Autocomplete
         onChange={onChange}
         values={mockValues}
         renderValue={(val) => val.name}
         multiple
-        value={[mockValues[0], mockValues[1]]}
+        value={value}
       />
     );
 
     await userEvent.click(queryAllByTestId("arke-chip-delete")[0]);
 
-    expect(onChange).toHaveBeenCalled();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith([mockValues[1]]);
+    expect(value).toEqual([mockValues[0], mockValues[1]]);
+  });
+
+  test("should delete the last value on backspace", async () => {
+    const onChange = jest.fn();
+    const value = [mockValues[0], mockValues[1]];
+    render(
+      <Autocomplete
+        onChange={onChange}
+        values={mockValues}
+        renderValue={(val) => val.name}
+        multiple
+        value={value}
+      />
+    );
+
+    await userEvent.type(
+      screen.getByTestId("arke-autocomplete"),
+      "{Backspace}"
+    );
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith([mockValues[0]]);
+    expect(value).toEqual([mockValues[0], mockValues[1]]);
+  });
+
+  test("should remove the chip on backspace when controlled", async () => {
+    function Controlled() {
+      const [value, setValue] = useState([mockValues[0], mockValues[1]]);
+      return (
+        <Autocomplete
+          onChange={setValue}
+          values={mockValues}
+          renderValue={(val) => val.name}
+          multiple
+          value={value}
+        />
+      );
+    }
+    render(<Controlled />);
+
+    await userEvent.type(
+      screen.getByTestId("arke-autocomplete"),
+      "{Backspace}"
+    );
+
+    expect(screen.queryAllByTestId("arke-chip")).toHaveLength(1);
   });
 
   test("should contain start/end Adornment when props is passed", () => {

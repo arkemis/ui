@@ -109,8 +109,7 @@ function Autocomplete<TValue>({
 
   function handleOnDelete(index: number) {
     if (Array.isArray(value) && multiple) {
-      value?.splice(index, 1);
-      onChange([...value] as TActualValue);
+      onChange(value.filter((_, i) => i !== index) as TActualValue);
     }
   }
 
@@ -194,7 +193,6 @@ function Autocomplete<TValue>({
                         inputValue.length === 0
                       ) {
                         handleOnDelete(value.length - 1);
-                        onChange(value as TActualValue);
                       }
                     }}
                   />
