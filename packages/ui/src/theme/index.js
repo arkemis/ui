@@ -17,8 +17,8 @@
 const extend = {
   colors: {
     primary: {
-      100: "rgb(rgb(var(--primary-100))",
-      200: "rgb(rgb(var(--primary-200))",
+      100: "rgb(var(--primary-100))",
+      200: "rgb(var(--primary-200))",
       300: "rgb(var(--primary-300))",
       400: "rgb(var(--primary-400))",
       DEFAULT: "rgb(var(--primary))",
